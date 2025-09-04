@@ -1,9 +1,13 @@
-import { SoundT } from "./AudioPlayer";
+import type { AudioTrackManifestT, SoundsManifestT, SoundT } from "./AudioPlayer";
 
-var _ctx: AudioContext | null = null;
-var _mixGain: GainNode | null = null;
+import { audioPlayer } from "./AudioPlayer.js";
 
-function scheduleKick(ctx: AudioContext, mixGain: GainNode, sound: SoundT) {
+/* var _ctx: AudioContext = new AudioContext();
+var _mixGain: GainNode = _ctx.createGain();
+_mixGain.connect(_ctx.destination); */
+
+
+function kick(ctx: AudioContext, mixGain: GainNode, sound: SoundT) {
     const osc = ctx.createOscillator();
     const osc2 = ctx.createOscillator();
     const gainOsc = ctx.createGain();
@@ -32,18 +36,64 @@ function scheduleKick(ctx: AudioContext, mixGain: GainNode, sound: SoundT) {
     osc2.stop(sound.stopTime);
 }
 
+const soundsManifest: SoundsManifestT = [
+    {
+        soundName: "kick",
+        soundScheduler: kick
+    }
+]
 
-document.getElementById("create-ctx-btn")?.addEventListener('click', () => {
-    _ctx = new AudioContext();
-    _mixGain = _ctx.createGain();
-    _mixGain.connect(_ctx.destination);
+const audioTrackManifest: AudioTrackManifestT = [
+    {
+        trackName: "someKicks",
+        track: {
+            tempoBPM: 120,
+            notes: [
+                {
+                    sound: "kick",
+                    frequency: 40,
+                    startBeat: 1,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    frequency: 40,
+                    startBeat: 2,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    frequency: 40,
+                    startBeat: 3,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    frequency: 40,
+                    startBeat: 4,
+                    durationInBeats: 1
+                },
+            ]
+        }
+    }
+]
+
+document.getElementById("loader")?.addEventListener('click', () => {
+    audioPlayer.init();
+    audioPlayer.loadSounds(soundsManifest);
+    audioPlayer.loadTracks(audioTrackManifest);
 })
 
-document.getElementById('custom')?.addEventListener('click', async  () => {
-    if (!_ctx || !_mixGain) {throw Error("context not initialized")}
-    scheduleKick(_ctx, _mixGain, {
-        frequency: 35,
-        startTime: _ctx.currentTime,
-        stopTime: _ctx.currentTime + 0.5
-    })
+const playBtn = document.getElementById('play-btn')
+if (!playBtn) {throw Error("playBtn could not be fetched!")};
+
+playBtn.addEventListener('click', () => {
+    audioPlayer.playTrack("someKicks", 1);
+    console.log("called")
+    /* kick(_ctx, _mixGain, {
+        soundName: "kick",
+        frequency: 40,
+        startTime: _ctx?.currentTime,
+        stopTime: _ctx?.currentTime + 0.5
+    }) */
 });

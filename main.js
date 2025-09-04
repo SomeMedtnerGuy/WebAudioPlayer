@@ -1,16 +1,9 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var _a, _b;
-var _ctx = null;
-var _mixGain = null;
-function scheduleKick(ctx, mixGain, sound) {
+var _a;
+import { audioPlayer } from "./AudioPlayer.js";
+/* var _ctx: AudioContext = new AudioContext();
+var _mixGain: GainNode = _ctx.createGain();
+_mixGain.connect(_ctx.destination); */
+function kick(ctx, mixGain, sound) {
     const osc = ctx.createOscillator();
     const osc2 = ctx.createOscillator();
     const gainOsc = ctx.createGain();
@@ -33,19 +26,63 @@ function scheduleKick(ctx, mixGain, sound) {
     osc.stop(sound.stopTime);
     osc2.stop(sound.stopTime);
 }
-(_a = document.getElementById("create-ctx-btn")) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => {
-    _ctx = new AudioContext();
-    _mixGain = _ctx.createGain();
-    _mixGain.connect(_ctx.destination);
-});
-(_b = document.getElementById('custom')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
-    if (!_ctx || !_mixGain) {
-        throw Error("context not initialized");
+const soundsManifest = [
+    {
+        soundName: "kick",
+        soundScheduler: kick
     }
-    scheduleKick(_ctx, _mixGain, {
-        frequency: 35,
-        startTime: _ctx.currentTime,
-        stopTime: _ctx.currentTime + 0.5
-    });
-}));
-export {};
+];
+const audioTrackManifest = [
+    {
+        trackName: "someKicks",
+        track: {
+            tempoBPM: 120,
+            notes: [
+                {
+                    sound: "kick",
+                    frequency: 40,
+                    startBeat: 1,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    frequency: 40,
+                    startBeat: 2,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    frequency: 40,
+                    startBeat: 3,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    frequency: 40,
+                    startBeat: 4,
+                    durationInBeats: 1
+                },
+            ]
+        }
+    }
+];
+(_a = document.getElementById("loader")) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => {
+    audioPlayer.init();
+    audioPlayer.loadSounds(soundsManifest);
+    audioPlayer.loadTracks(audioTrackManifest);
+});
+const playBtn = document.getElementById('play-btn');
+if (!playBtn) {
+    throw Error("playBtn could not be fetched!");
+}
+;
+playBtn.addEventListener('click', () => {
+    audioPlayer.playTrack("someKicks", 1);
+    console.log("called");
+    /* kick(_ctx, _mixGain, {
+        soundName: "kick",
+        frequency: 40,
+        startTime: _ctx?.currentTime,
+        stopTime: _ctx?.currentTime + 0.5
+    }) */
+});
