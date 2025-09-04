@@ -25,34 +25,114 @@ const audioTrackManifest: AudioTrackManifestT = [
             notes: [
                 {
                     sound: "kick",
-                    pitch: "E1",
+                    pitch: "D1",
                     startBeat: 1,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    pitch: "E1",
+                    pitch: "D1",
                     startBeat: 2,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    pitch: "E1",
+                    pitch: "D1",
                     startBeat: 3,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    pitch: "E1",
+                    pitch: "D1",
                     startBeat: 4,
                     durationInBeats: 1
                 },
                 {
+                    sound: "kick",
+                    pitch: "D1",
+                    startBeat: 5,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    pitch: "D1",
+                    startBeat: 6,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    pitch: "D1",
+                    startBeat: 7,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "kick",
+                    pitch: "D1",
+                    startBeat: 8,
+                    durationInBeats: 1
+                },
+
+                //Melody
+                {
                     sound: "tone1",
-                    pitch: "B2",
-                    startBeat: 1,
-                    durationInBeats: 3
-                }
+                    pitch: "D2",
+                    startBeat: 2,
+                    durationInBeats: 0.5
+                },
+                {
+                    sound: "tone1",
+                    pitch: "F2",
+                    startBeat: 3,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "tone1",
+                    pitch: "F2",
+                    startBeat: 4,
+                    durationInBeats: 0.5
+                },
+                {
+                    sound: "tone1",
+                    pitch: "D2",
+                    startBeat: 4.5,
+                    durationInBeats: 0.5
+                },
+                {
+                    sound: "tone1",
+                    pitch: "E2",
+                    startBeat: 5,
+                    durationInBeats: 0.5
+                },
+                {
+                    sound: "tone1",
+                    pitch: "C2",
+                    startBeat: 5.5,
+                    durationInBeats: 0.5
+                },
+                {
+                    sound: "tone1",
+                    pitch: "A1",
+                    startBeat: 6.5,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "tone1",
+                    pitch: "A1",
+                    startBeat: 7.5,
+                    durationInBeats: 0.5
+                },
+                {
+                    sound: "tone1",
+                    pitch: "C2",
+                    startBeat: 8,
+                    durationInBeats: 0.5
+                },
+                {
+                    sound: "tone1",
+                    pitch: "D2",
+                    startBeat: 8.5,
+                    durationInBeats: 0.5
+                },
             ]
         }
     }
@@ -68,5 +148,5 @@ const playBtn = document.getElementById('play-btn')
 if (!playBtn) {throw Error("playBtn could not be fetched!")};
 
 playBtn.addEventListener('click', () => {
-    audioPlayer.playTrack("someKicks", 1);
+    audioPlayer.playTrack("someKicks", 0.5);
 });

@@ -2,44 +2,55 @@ import type { SoundT } from "./AudioPlayer"
 
 export function kick(ctx: AudioContext, mixGain: GainNode, sound: SoundT) {
     const osc = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
     const gainOsc = ctx.createGain();
-    const gainOsc2 = ctx.createGain();
-
-    osc.type = "triangle";
-    osc2.type = "sine";
-
-    gainOsc.gain.setValueAtTime(1, sound.startTime);
-    gainOsc.gain.exponentialRampToValueAtTime(0.001, sound.stopTime);
-    gainOsc2.gain.setValueAtTime(1, sound.startTime);
-    gainOsc2.gain.exponentialRampToValueAtTime(0.001, sound.stopTime);
-
+    osc.type = "sine";
     osc.frequency.setValueAtTime(sound.frequency * 2.5, sound.startTime);
-    osc.frequency.exponentialRampToValueAtTime(0.001, sound.stopTime);
-    osc2.frequency.setValueAtTime(sound.frequency, sound.startTime);
-
+    osc.frequency.exponentialRampToValueAtTime(0.01, sound.stopTime);
+    gainOsc.gain.setValueAtTime(1, sound.startTime);
+    gainOsc.gain.exponentialRampToValueAtTime(0.01, sound.stopTime);
     osc.connect(gainOsc);
-    osc2.connect(gainOsc2);
     gainOsc.connect(mixGain);
+
+    const osc2 = ctx.createOscillator();
+    const gainOsc2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(sound.frequency, sound.startTime);
+    gainOsc2.gain.setValueAtTime(1, sound.startTime);
+    gainOsc2.gain.exponentialRampToValueAtTime(0.01, sound.stopTime);
+    osc2.connect(gainOsc2);
     gainOsc2.connect(mixGain);
 
     osc.start(sound.startTime);
-    osc2.start(sound.startTime);
     osc.stop(sound.stopTime);
+    osc2.start(sound.startTime);
     osc2.stop(sound.stopTime);
 }
 
 export function tone1(ctx: AudioContext, mixGain: GainNode, sound: SoundT) {
     const osc = ctx.createOscillator();
     const gainOsc = ctx.createGain();
-    
     osc.type = "sine";
-
     osc.frequency.setValueAtTime(sound.frequency, sound.startTime);
-    gainOsc.gain.setValueAtTime(0.5, sound.startTime);
-    gainOsc.gain.exponentialRampToValueAtTime(0.01, sound.stopTime)
+    gainOsc.gain.setValueAtTime(0.001, sound.startTime);
+    gainOsc.gain.exponentialRampToValueAtTime(0.9, sound.startTime + 0.01);
+    gainOsc.gain.setValueAtTime(0.9, sound.stopTime - 0.1)
+    gainOsc.gain.exponentialRampToValueAtTime(0.001, sound.stopTime - 0.05)
     osc.connect(gainOsc);
     gainOsc.connect(mixGain);
+
+    const osc2 = ctx.createOscillator();
+    const gainOsc2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(sound.frequency * 2, sound.startTime);
+    gainOsc2.gain.setValueAtTime(0.001, sound.startTime);
+    gainOsc2.gain.exponentialRampToValueAtTime(0.7, sound.startTime + 0.01); //Change these to relative times to the duration!
+    gainOsc2.gain.setValueAtTime(0.7, sound.stopTime - 0.1)
+    gainOsc2.gain.exponentialRampToValueAtTime(0.001, sound.stopTime - 0.01)
+    osc2.connect(gainOsc2);
+    gainOsc2.connect(mixGain);
+
     osc.start(sound.startTime);
     osc.stop(sound.stopTime);
+    osc2.start(sound.startTime);
+    osc2.stop(sound.stopTime);
 }

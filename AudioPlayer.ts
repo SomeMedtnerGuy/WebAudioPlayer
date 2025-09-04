@@ -38,7 +38,13 @@ class AudioPlayer {
     init() {
         this._ctx = new AudioContext();
         this._mixGain = this.ctx.createGain();
+        this._mixGain.gain.setValueAtTime(1, this.ctx.currentTime)
+        this._mixGain.gain.value = 0.5
         this.mixGain.connect(this._ctx.destination);
+
+        //For some reason, at least in my firefox, the first low frequency sounds after creating a context
+        // are super distorted. This cleans them up. Not the nicest of fixes, but seems to work
+        this._cleanSoundObjects();
     }
 
     loadSounds(soundsManifest: SoundsManifestT) {
@@ -93,6 +99,19 @@ class AudioPlayer {
 
     private _soundsMap = new Map<string, SoundSchedulerT>();
     private _trackMap = new Map<string, AudioTrackT>();
+
+    private _cleanSoundObjects() {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(0.001, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(this.mixGain);
+
+        osc.start(this.ctx.currentTime);
+        osc.stop(this.ctx.currentTime + 0.1);
+    }
 }
 
 export const audioPlayer = new AudioPlayer();
