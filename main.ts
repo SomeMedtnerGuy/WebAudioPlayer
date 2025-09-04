@@ -1,45 +1,19 @@
-import type { AudioTrackManifestT, SoundsManifestT, SoundT } from "./AudioPlayer";
+import type { AudioTrackManifestT, SoundsManifestT } from "./AudioPlayer";
 
+import { kick, tone1 } from "./sounds.js";
 import { audioPlayer } from "./AudioPlayer.js";
 
-/* var _ctx: AudioContext = new AudioContext();
-var _mixGain: GainNode = _ctx.createGain();
-_mixGain.connect(_ctx.destination); */
 
 
-function kick(ctx: AudioContext, mixGain: GainNode, sound: SoundT) {
-    const osc = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const gainOsc = ctx.createGain();
-    const gainOsc2 = ctx.createGain();
-
-    osc.type = "triangle";
-    osc2.type = "sine";
-
-    gainOsc.gain.setValueAtTime(1, sound.startTime);
-    gainOsc.gain.exponentialRampToValueAtTime(0.001, sound.stopTime);
-    gainOsc2.gain.setValueAtTime(1, sound.startTime);
-    gainOsc2.gain.exponentialRampToValueAtTime(0.001, sound.stopTime);
-
-    osc.frequency.setValueAtTime(sound.frequency * 2.5, sound.startTime);
-    osc.frequency.exponentialRampToValueAtTime(0.001, sound.stopTime);
-    osc2.frequency.setValueAtTime(sound.frequency, sound.startTime);
-
-    osc.connect(gainOsc);
-    osc2.connect(gainOsc2);
-    gainOsc.connect(mixGain);
-    gainOsc2.connect(mixGain);
-
-    osc.start(sound.startTime);
-    osc2.start(sound.startTime);
-    osc.stop(sound.stopTime);
-    osc2.stop(sound.stopTime);
-}
 
 const soundsManifest: SoundsManifestT = [
     {
         soundName: "kick",
         soundScheduler: kick
+    },
+    {
+        soundName: "tone1",
+        soundScheduler: tone1
     }
 ]
 
@@ -51,28 +25,34 @@ const audioTrackManifest: AudioTrackManifestT = [
             notes: [
                 {
                     sound: "kick",
-                    frequency: 40,
+                    pitch: "E1",
                     startBeat: 1,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    frequency: 40,
+                    pitch: "E1",
                     startBeat: 2,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    frequency: 40,
+                    pitch: "E1",
                     startBeat: 3,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    frequency: 40,
+                    pitch: "E1",
                     startBeat: 4,
                     durationInBeats: 1
                 },
+                {
+                    sound: "tone1",
+                    pitch: "B2",
+                    startBeat: 1,
+                    durationInBeats: 3
+                }
             ]
         }
     }
@@ -89,11 +69,4 @@ if (!playBtn) {throw Error("playBtn could not be fetched!")};
 
 playBtn.addEventListener('click', () => {
     audioPlayer.playTrack("someKicks", 1);
-    console.log("called")
-    /* kick(_ctx, _mixGain, {
-        soundName: "kick",
-        frequency: 40,
-        startTime: _ctx?.currentTime,
-        stopTime: _ctx?.currentTime + 0.5
-    }) */
 });

@@ -1,6 +1,8 @@
+import { pitchToFrequency } from "./pitchToFrequency.js"
+
 type NoteT = {
     sound: string,
-    frequency: number,
+    pitch: string,
     startBeat: number,
     durationInBeats: number
 }
@@ -62,7 +64,7 @@ class AudioPlayer {
             const startTime = now + (note.startBeat - 1) * beatDuration * speed;
             return {
                 soundName: note.sound,
-                frequency: note.frequency,
+                frequency: pitchToFrequency(note.pitch),
                 startTime: startTime,
                 stopTime: startTime + (note.durationInBeats * beatDuration * speed)
             }
@@ -77,8 +79,6 @@ class AudioPlayer {
         makeSound(this.ctx, this.mixGain, sound);
     }
 
-
-    
 
     private _ctx: AudioContext | null = null;
     get ctx() {
@@ -95,4 +95,5 @@ class AudioPlayer {
     private _trackMap = new Map<string, AudioTrackT>();
 }
 
-export const audioPlayer = new AudioPlayer()
+export const audioPlayer = new AudioPlayer();
+
