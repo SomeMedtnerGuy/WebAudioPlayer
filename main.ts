@@ -1,6 +1,6 @@
 import type { AudioTrackManifestT, SoundsManifestT } from "./AudioPlayer";
 
-import { kick, tone1 } from "./sounds.js";
+import { falling, increasing, kick, rising, tone1 } from "./sounds.js";
 import { audioPlayer } from "./AudioPlayer.js";
 
 
@@ -14,6 +14,18 @@ const soundsManifest: SoundsManifestT = [
     {
         soundName: "tone1",
         soundScheduler: tone1
+    },
+    {
+        soundName: "rising",
+        soundScheduler: rising
+    },
+    {
+        soundName: "falling",
+        soundScheduler: falling
+    },
+    {
+        soundName: "increasing",
+        soundScheduler: increasing
     }
 ]
 
@@ -21,7 +33,7 @@ const audioTrackManifest: AudioTrackManifestT = [
     {
         trackName: "someKicks",
         track: {
-            tempoBPM: 120,
+            tempoBPM: 150,
             notes: [
                 {
                     sound: "kick",
@@ -49,25 +61,25 @@ const audioTrackManifest: AudioTrackManifestT = [
                 },
                 {
                     sound: "kick",
-                    pitch: "D1",
+                    pitch: "A1",
                     startBeat: 5,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    pitch: "D1",
+                    pitch: "A1",
                     startBeat: 6,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    pitch: "D1",
+                    pitch: "A1",
                     startBeat: 7,
                     durationInBeats: 1
                 },
                 {
                     sound: "kick",
-                    pitch: "D1",
+                    pitch: "A1",
                     startBeat: 8,
                     durationInBeats: 1
                 },
@@ -135,6 +147,108 @@ const audioTrackManifest: AudioTrackManifestT = [
                 },
             ]
         }
+    },
+    {
+        trackName: "upgrade",
+        track: {
+            tempoBPM: 400,
+            notes: [
+                {
+                    sound: "rising",
+                    pitch: "A3",
+                    startBeat: 1,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "rising",
+                    pitch: "A3",
+                    startBeat: 2,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "rising",
+                    pitch: "A3",
+                    startBeat: 3,
+                    durationInBeats: 1
+                },
+            ]
+        }
+    },
+    {
+        trackName: "downgrade",
+        track: {
+            tempoBPM: 400,
+            notes: [
+                {
+                    sound: "falling",
+                    pitch: "A3",
+                    startBeat: 1,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "falling",
+                    pitch: "A3",
+                    startBeat: 2,
+                    durationInBeats: 1
+                },
+                {
+                    sound: "falling",
+                    pitch: "A3",
+                    startBeat: 3,
+                    durationInBeats: 1
+                },
+            ]
+        }
+    },
+    {
+        trackName: "mystery",
+        track: {
+            tempoBPM: 120,
+            notes: [
+                {
+                    sound: "increasing",
+                    pitch: "C2",
+                    startBeat: 1,
+                    durationInBeats: 4
+                },
+                {
+                    sound: "increasing",
+                    pitch: "G2",
+                    startBeat: 1,
+                    durationInBeats: 4
+                },
+                {
+                    sound: "increasing",
+                    pitch: "E3",
+                    startBeat: 1,
+                    durationInBeats: 4
+                },
+                {
+                    sound: "increasing",
+                    pitch: "Bb3",
+                    startBeat: 1,
+                    durationInBeats: 4
+                },
+                {
+                    sound: "increasing",
+                    pitch: "D4",
+                    startBeat: 1,
+                    durationInBeats: 4
+                },
+                {
+                    sound: "increasing",
+                    pitch: "F#4",
+                    startBeat: 1,
+                    durationInBeats: 4
+                },
+                {
+                    sound: "increasing",
+                    pitch: "A4",
+                    startBeat: 1,
+                    durationInBeats: 4
+                },
+            ]
+        }
     }
 ]
 
@@ -148,5 +262,7 @@ const playBtn = document.getElementById('play-btn')
 if (!playBtn) {throw Error("playBtn could not be fetched!")};
 
 playBtn.addEventListener('click', () => {
-    audioPlayer.playTrack("someKicks", 0.5);
+    audioPlayer.playTrack("someKicks", 1);
 });
+
+//TODO: somehow I have to adapt the mixGain to account for the ammount of oscilators at any given time :(

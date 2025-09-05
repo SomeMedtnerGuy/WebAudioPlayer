@@ -38,8 +38,7 @@ class AudioPlayer {
     init() {
         this._ctx = new AudioContext();
         this._mixGain = this.ctx.createGain();
-        this._mixGain.gain.setValueAtTime(1, this.ctx.currentTime)
-        this._mixGain.gain.value = 0.5
+        this._mixGain.gain.setValueAtTime(0.3, this.ctx.currentTime)
         this.mixGain.connect(this._ctx.destination);
 
         //For some reason, at least in my firefox, the first low frequency sounds after creating a context
