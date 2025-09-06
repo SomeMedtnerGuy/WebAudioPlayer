@@ -1,4 +1,4 @@
-import type { AudioTrackManifestT, SoundsManifestT } from "./AudioPlayer";
+import type { AudioTrackManifestT, SoundsManifestT } from "./AudioPlayer.ts";
 
 import { falling, increasing, kick, rising, tone1 } from "./sounds.js";
 import { audioPlayer } from "./AudioPlayer.js";
@@ -34,6 +34,7 @@ const audioTrackManifest: AudioTrackManifestT = [
         trackName: "someKicks",
         track: {
             tempoBPM: 150,
+            maxIndividualGain: 1,
             notes: [
                 {
                     sound: "kick",
@@ -150,8 +151,10 @@ const audioTrackManifest: AudioTrackManifestT = [
     },
     {
         trackName: "upgrade",
+        
         track: {
             tempoBPM: 400,
+            maxIndividualGain: 1,
             notes: [
                 {
                     sound: "rising",
@@ -176,8 +179,10 @@ const audioTrackManifest: AudioTrackManifestT = [
     },
     {
         trackName: "downgrade",
+        
         track: {
             tempoBPM: 400,
+            maxIndividualGain: 1,
             notes: [
                 {
                     sound: "falling",
@@ -202,8 +207,10 @@ const audioTrackManifest: AudioTrackManifestT = [
     },
     {
         trackName: "mystery",
+        
         track: {
             tempoBPM: 120,
+            maxIndividualGain: 1/7,
             notes: [
                 {
                     sound: "increasing",
@@ -249,7 +256,56 @@ const audioTrackManifest: AudioTrackManifestT = [
                 },
             ]
         }
-    }
+    },
+    {
+        trackName: "testRising",
+        
+        track: {
+            tempoBPM: 60,
+            maxIndividualGain: 1,
+            notes: [
+                {
+                    sound: "rising",
+                    pitch: "E1",
+                    startBeat: 1,
+                    durationInBeats: 10
+                }
+            ]
+        }
+    },
+    {
+        trackName: "testFalling",
+        
+        track: {
+            tempoBPM: 60,
+            maxIndividualGain: 1,
+            notes: [
+                {
+                    sound: "falling",
+                    pitch: "E6",
+                    startBeat: 1,
+                    durationInBeats: 10
+                }
+            ]
+        }
+    },
+    {
+        trackName: "testIncreasing",
+        
+        track: {
+            tempoBPM: 60,
+            maxIndividualGain: 1,
+            notes: [
+                {
+                    sound: "increasing",
+                    pitch: "E1",
+                    startBeat: 1,
+                    durationInBeats: 10
+                }
+            ]
+        }
+    },
+
 ]
 
 document.getElementById("loader")?.addEventListener('click', () => {
@@ -262,7 +318,9 @@ const playBtn = document.getElementById('play-btn')
 if (!playBtn) {throw Error("playBtn could not be fetched!")};
 
 playBtn.addEventListener('click', () => {
-    audioPlayer.playTrack("someKicks", 1);
+    //audioPlayer.playTrack("upgrade", 1);
+    audioPlayer.playTrack("mystery", 1);
+    //audioPlayer.playTrack("testFalling", 1)
 });
 
 //TODO: somehow I have to adapt the mixGain to account for the ammount of oscilators at any given time :(
