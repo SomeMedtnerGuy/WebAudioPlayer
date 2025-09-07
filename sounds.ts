@@ -1,5 +1,89 @@
 import type { SoundT } from "./AudioPlayer.ts"
 
+export function hollow(ctx: AudioContext, output: GainNode, sound: SoundT) {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = sound.frequency;
+
+    const oscGain = ctx.createGain();
+    oscGain.gain.setValueAtTime(sound.maxGain, sound.startTime);
+    oscGain.gain.exponentialRampToValueAtTime(0.01, sound.stopTime);
+
+    osc.connect(oscGain).connect(output);
+    osc.start(sound.startTime);
+    osc.stop(sound.stopTime);
+}
+
+
+export function explosion(ctx: AudioContext, output: GainNode, sound: SoundT) {
+    const rumble = ctx.createOscillator();
+    rumble.type = 'sine';
+    rumble.frequency.setValueAtTime(sound.frequency, ctx.currentTime);
+    const rumbleGain = ctx.createGain();
+    rumbleGain.gain.setValueAtTime(1, ctx.currentTime);
+    rumbleGain.gain.exponentialRampToValueAtTime(0.01, sound.stopTime);
+
+    const bufferSize = ctx.sampleRate * 2;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.setValueAtTime(150, sound.startTime);
+    noiseFilter.Q.value = 1;
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(1, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, sound.stopTime);
+
+    const finalGain = ctx.createGain();
+    finalGain.gain.setValueAtTime(0.001, sound.startTime);
+    finalGain.gain.linearRampToValueAtTime(sound.maxGain * 3, sound.startTime + 0.01);
+    finalGain.gain.setValueAtTime(sound.maxGain * 3, sound.startTime + 0.4);
+    finalGain.gain.linearRampToValueAtTime(0.001, sound.stopTime)
+
+    rumble.connect(rumbleGain).connect(finalGain);
+    noise.connect(noiseFilter).connect(noiseGain).connect(finalGain);
+    finalGain.connect(output)
+
+    rumble.start(sound.startTime);
+    rumble.stop(sound.stopTime);
+    noise.start(sound.startTime)
+}
+
+export function sine(ctx: AudioContext, output: GainNode, sound: SoundT) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(sound.frequency, 0.001);
+    gain.gain.setValueAtTime(sound.maxGain, 0.001);
+
+    const envelope = createEnvelope(ctx, sound.startTime, sound.stopTime);
+    osc.connect(gain).connect(envelope).connect(output);
+
+    osc.start(sound.startTime);
+    osc.stop(sound.stopTime);
+}
+
+export function triangle(ctx: AudioContext, output: GainNode, sound: SoundT) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(sound.frequency, 0.001);
+    gain.gain.setValueAtTime(sound.maxGain, 0.001);
+
+    const envelope = createEnvelope(ctx, sound.startTime, sound.stopTime);
+    osc.connect(gain).connect(envelope).connect(output);
+
+    osc.start(sound.startTime);
+    osc.stop(sound.stopTime);
+}
+
 export function kick(ctx: AudioContext, output: GainNode, sound: SoundT) {
     const osc = ctx.createOscillator();
     const gainOsc = ctx.createGain();
@@ -76,7 +160,22 @@ export function increasing(ctx: AudioContext, output: GainNode, sound: SoundT) {
 
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.001, sound.startTime);
-    gain.gain.linearRampToValueAtTime(sound.maxGain, sound.stopTime); //todo this should go outside
+    gain.gain.linearRampToValueAtTime(sound.maxGain, sound.stopTime);
+
+    const envelope = createEnvelope(ctx, sound.startTime, sound.stopTime);
+    osc.connect(gain).connect(envelope).connect(output);
+    osc.start(sound.startTime);
+    osc.stop(sound.stopTime)
+}
+
+export function decreasing(ctx: AudioContext, output: GainNode, sound: SoundT) {
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(sound.frequency, sound.startTime);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(sound.maxGain, sound.startTime);
+    gain.gain.linearRampToValueAtTime(0.001, sound.stopTime);
 
     const envelope = createEnvelope(ctx, sound.startTime, sound.stopTime);
     osc.connect(gain).connect(envelope).connect(output);

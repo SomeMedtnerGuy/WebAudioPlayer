@@ -1,6 +1,6 @@
 import { pitchToFrequency } from "./pitchToFrequency.js"
 
-type NoteT = {
+export type NoteT = {
     sound: string,
     pitch: string,
     startBeat: number,
@@ -105,7 +105,6 @@ class AudioPlayer {
     get tracksActive() { return this._tracksActive}
     set tracksActive(newValue: number) {
         this._tracksActive = newValue;
-        console.log("setter called with value ", newValue)
         const newGain = newValue === 0 ? 1 : (1 / Math.sqrt(newValue))
         this.mixGain.gain.setTargetAtTime(newGain * 0.7, this.ctx.currentTime, 0.1);
     }
