@@ -1,4 +1,4 @@
-import type { SoundT } from "./AudioPlayer"
+import type { SoundT } from "./AudioPlayer.ts"
 
 export function kick(ctx: AudioContext, output: GainNode, sound: SoundT) {
     const osc = ctx.createOscillator();
@@ -28,26 +28,16 @@ export function kick(ctx: AudioContext, output: GainNode, sound: SoundT) {
 
 export function tone1(ctx: AudioContext, output: GainNode, sound: SoundT) {
     const osc = ctx.createOscillator();
-    const gainOsc = ctx.createGain();
     osc.type = "sine";
     osc.frequency.setValueAtTime(sound.frequency, sound.startTime);
-    gainOsc.gain.setValueAtTime(0.001, sound.startTime);
-    gainOsc.gain.exponentialRampToValueAtTime(0.9, sound.startTime + 0.01);
-    gainOsc.gain.setValueAtTime(0.9, sound.stopTime - 0.1)
-    gainOsc.gain.exponentialRampToValueAtTime(0.001, sound.stopTime - 0.05)
-    osc.connect(gainOsc);
-    gainOsc.connect(output);
+    const envelope = createEnvelope(ctx, sound.startTime, sound.stopTime);
+    osc.connect(envelope).connect(output);
 
     const osc2 = ctx.createOscillator();
-    const gainOsc2 = ctx.createGain();
     osc2.type = "sine";
     osc2.frequency.setValueAtTime(sound.frequency * 2, sound.startTime);
-    gainOsc2.gain.setValueAtTime(0.001, sound.startTime);
-    gainOsc2.gain.exponentialRampToValueAtTime(0.7, sound.startTime + 0.01); //TODO: Change these to relative times to the duration!
-    gainOsc2.gain.setValueAtTime(0.7, sound.stopTime - 0.1)
-    gainOsc2.gain.exponentialRampToValueAtTime(0.001, sound.stopTime - 0.01)
-    osc2.connect(gainOsc2);
-    gainOsc2.connect(output);
+    const envelope2 = createEnvelope(ctx, sound.startTime, sound.stopTime);
+    osc2.connect(envelope2).connect(output);
 
     osc.start(sound.startTime);
     osc.stop(sound.stopTime);
@@ -60,7 +50,9 @@ export function rising(ctx: AudioContext, output: GainNode, sound: SoundT) {
     osc.type = "sine";
     osc.frequency.setValueAtTime(sound.frequency, sound.startTime);
     osc.frequency.linearRampToValueAtTime(sound.frequency * 8, sound.stopTime);
-    osc.connect(output);
+
+    const envelope = createEnvelope(ctx, sound.startTime, sound.stopTime);
+    osc.connect(envelope).connect(output);
     osc.start(sound.startTime);
     osc.stop(sound.stopTime);
 }
@@ -70,7 +62,9 @@ export function falling(ctx: AudioContext, output: GainNode, sound: SoundT) {
     osc.type = "sine";
     osc.frequency.setValueAtTime(sound.frequency, sound.startTime);
     osc.frequency.linearRampToValueAtTime(sound.frequency / 8, sound.stopTime);
-    osc.connect(output);
+
+    const envelope = createEnvelope(ctx, sound.startTime, sound.stopTime)
+    osc.connect(envelope).connect(output);
     osc.start(sound.startTime);
     osc.stop(sound.stopTime);
 }
@@ -82,10 +76,21 @@ export function increasing(ctx: AudioContext, output: GainNode, sound: SoundT) {
 
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.001, sound.startTime);
-    gain.gain.linearRampToValueAtTime(1 / 7, sound.stopTime);
+    gain.gain.linearRampToValueAtTime(sound.maxGain, sound.stopTime); //todo this should go outside
 
-    osc.connect(gain);
-    gain.connect(output);
+    const envelope = createEnvelope(ctx, sound.startTime, sound.stopTime);
+    osc.connect(gain).connect(envelope).connect(output);
     osc.start(sound.startTime);
     osc.stop(sound.stopTime)
+}
+
+
+
+function createEnvelope(ctx: AudioContext, startTime: number, stopTime: number) {
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.001, startTime);
+    gain.gain.exponentialRampToValueAtTime(1, startTime + 0.05);
+    gain.gain.setValueAtTime(1, stopTime - 0.1)
+    gain.gain.exponentialRampToValueAtTime(0.001, stopTime - 0.01)
+    return gain
 }

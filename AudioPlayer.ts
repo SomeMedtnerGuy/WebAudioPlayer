@@ -11,11 +11,13 @@ export type SoundT = {
     soundName: string
     frequency: number,
     startTime: number,
-    stopTime: number
+    stopTime: number,
+    maxGain: number
 }
 
 type AudioTrackT = {
-    tempoBPM: number
+    tempoBPM: number,
+    maxIndividualGain: number,
     notes: NoteT[]
 }
 
@@ -38,8 +40,10 @@ class AudioPlayer {
     init() {
         this._ctx = new AudioContext();
         this._mixGain = this.ctx.createGain();
-        this._mixGain.gain.setValueAtTime(0.3, this.ctx.currentTime)
-        this.mixGain.connect(this._ctx.destination);
+        this._mixGain.gain.setValueAtTime(0.7, this.ctx.currentTime)
+        
+        const compressor = this.ctx.createDynamicsCompressor();
+        this.mixGain.connect(compressor).connect(this.ctx.destination);
 
         //For some reason, at least in my firefox, the first low frequency sounds after creating a context
         // are super distorted. This cleans them up. Not the nicest of fixes, but seems to work
@@ -71,9 +75,22 @@ class AudioPlayer {
                 soundName: note.sound,
                 frequency: pitchToFrequency(note.pitch),
                 startTime: startTime,
-                stopTime: startTime + (note.durationInBeats * beatDuration * speed)
+                stopTime: startTime + (note.durationInBeats * beatDuration * speed),
+                maxGain: track.maxIndividualGain
             }
         })
+
+        this.tracksActive++;
+        const lastSound = sounds.reduce((latestSound, sound) => {
+            return sound.stopTime > latestSound.stopTime ? sound : latestSound;
+        })
+        const dummy = this.ctx.createBufferSource();
+        dummy.buffer = this.ctx.createBuffer(1, 1, this.ctx.sampleRate);
+        dummy.start(lastSound.stopTime);
+        dummy.onended = () => {
+            this.tracksActive--;
+        };
+
         sounds.forEach(sound => this.scheduleSound(sound))
     }
 
@@ -84,6 +101,14 @@ class AudioPlayer {
         makeSound(this.ctx, this.mixGain, sound);
     }
 
+    private _tracksActive: number = 0;
+    get tracksActive() { return this._tracksActive}
+    set tracksActive(newValue: number) {
+        this._tracksActive = newValue;
+        console.log("setter called with value ", newValue)
+        const newGain = newValue === 0 ? 1 : (1 / Math.sqrt(newValue))
+        this.mixGain.gain.setTargetAtTime(newGain * 0.7, this.ctx.currentTime, 0.1);
+    }
 
     private _ctx: AudioContext | null = null;
     get ctx() {
@@ -110,6 +135,8 @@ class AudioPlayer {
 
         osc.start(this.ctx.currentTime);
         osc.stop(this.ctx.currentTime + 0.1);
+        osc.disconnect();
+        gain.disconnect();
     }
 }
 
